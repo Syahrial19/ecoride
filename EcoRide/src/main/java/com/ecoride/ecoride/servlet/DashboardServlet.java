@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -41,7 +42,23 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("daftarRiwayat", riwayat.size() > 5 ? riwayat.subList(0, 5) : riwayat);
 
         if ("success".equals(request.getParameter("topup"))) {
-            request.setAttribute("successMsg", "Top-up saldo berhasil.");
+            HttpSession session = request.getSession(false);
+            Object method = session != null ? session.getAttribute("topupSuccessMethod") : null;
+            Object reference = session != null ? session.getAttribute("topupSuccessReference") : null;
+
+            if (method != null && reference != null) {
+                request.setAttribute("successMsg",
+                        "Pengajuan top-up berhasil dikirim. Metode: " + method
+                        + ", Referensi: " + reference + ". Saldo akan bertambah setelah disetujui admin.");
+            } else {
+                request.setAttribute("successMsg", "Pengajuan top-up berhasil dikirim. Menunggu persetujuan admin.");
+            }
+
+            if (session != null) {
+                session.removeAttribute("topupSuccessAmount");
+                session.removeAttribute("topupSuccessMethod");
+                session.removeAttribute("topupSuccessReference");
+            }
         }
 
         request.getRequestDispatcher("/member/dashboard.jsp").forward(request, response);

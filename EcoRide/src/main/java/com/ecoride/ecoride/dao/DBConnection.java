@@ -154,6 +154,25 @@ public class DBConnection {
                     + "CONSTRAINT rental_transactions_vehicle_fk FOREIGN KEY (vehicle_id) REFERENCES vehicles (vehicle_id)"
                     + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+            stmt.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS topup_requests ("
+                    + "id INT NOT NULL AUTO_INCREMENT,"
+                    + "member_id INT NOT NULL,"
+                    + "amount DOUBLE NOT NULL,"
+                    + "payment_method VARCHAR(30) NOT NULL,"
+                    + "payer_account VARCHAR(100) NOT NULL,"
+                    + "reference_code VARCHAR(40) NOT NULL UNIQUE,"
+                    + "status VARCHAR(20) NOT NULL DEFAULT 'PENDING',"
+                    + "created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                    + "approved_at DATETIME DEFAULT NULL,"
+                    + "approved_by INT DEFAULT NULL,"
+                    + "PRIMARY KEY (id),"
+                    + "KEY member_id (member_id),"
+                    + "KEY approved_by (approved_by),"
+                    + "CONSTRAINT topup_requests_member_fk FOREIGN KEY (member_id) REFERENCES members (id),"
+                    + "CONSTRAINT topup_requests_admin_fk FOREIGN KEY (approved_by) REFERENCES members (id)"
+                    + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
             seedData(stmt);
             initialized = true;
             System.out.println("[DBConnection] Database siap digunakan.");

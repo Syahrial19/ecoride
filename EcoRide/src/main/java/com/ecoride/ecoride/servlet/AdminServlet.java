@@ -6,6 +6,7 @@
 package com.ecoride.ecoride.servlet;
 
 import com.ecoride.ecoride.dao.MemberDAO;
+import com.ecoride.ecoride.dao.TopUpDAO;
 import com.ecoride.ecoride.dao.TransactionDAO;
 import com.ecoride.ecoride.dao.VehicleDAO;
 import com.ecoride.ecoride.model.ElectricBike;
@@ -40,6 +41,7 @@ import java.util.List;
 public class AdminServlet extends HttpServlet {
 
     private final MemberDAO      memberDAO      = new MemberDAO();
+    private final TopUpDAO       topUpDAO       = new TopUpDAO();
     private final VehicleDAO     vehicleDAO     = new VehicleDAO();
     private final TransactionDAO transactionDAO = new TransactionDAO();
 
@@ -98,6 +100,10 @@ public class AdminServlet extends HttpServlet {
             doDeleteVehicle(request, response);
         } else if ("chargeVehicle".equals(action) || "recharge".equals(action)) {
             doChargeVehicle(request, response);
+        } else if ("approveTopUp".equals(action)) {
+            doApproveTopUp(request, response);
+        } else if ("rejectTopUp".equals(action)) {
+            doRejectTopUp(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/admin");
         }
@@ -118,14 +124,17 @@ public class AdminServlet extends HttpServlet {
         long kendaraanTersedia = vehicleDAO.getAllAvailable().size();
         List<Object[]> daftarTransaksi = transactionDAO.getAll();
         double totalPendapatan = transactionDAO.getTotalPendapatan();
+        int pendingTopUpCount = topUpDAO.countPendingRequests();
 
         request.setAttribute("totalMember",       totalMember);
         request.setAttribute("kendaraanTersedia", kendaraanTersedia);
         request.setAttribute("totalTransaksi",    daftarTransaksi.size());
         request.setAttribute("totalPendapatan",   totalPendapatan);
+        request.setAttribute("pendingTopUpCount", pendingTopUpCount);
         request.setAttribute("daftarMember",      daftarMember);
         request.setAttribute("daftarTransaksi",   daftarTransaksi.size() > 5
                 ? daftarTransaksi.subList(0, 5) : daftarTransaksi);
+        request.setAttribute("pendingTopUps",     topUpDAO.getPendingRequests());
 
         request.getRequestDispatcher("/admin/dashboards.jsp").forward(request, response);
     }
@@ -282,5 +291,39 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("errorMsg", "Gagal meng-charge kendaraan.");
         }
         showVehiclePage(request, response);
+    }
+
+    private void doApproveTopUp(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        try {
+            int requestId = Integer.parseInt(request.getParameter("requestId"));
+            Member admin = SessionUtil.getMember(request);
+            boolean ok = topUpDAO.approveRequest(requestId, admin.getId());
+            if (ok) {
+                request.setAttribute("successMsg", "Top-up berhasil disetujui. Saldo member sudah bertambah.");
+            } else {
+                request.setAttribute("errorMsg", "Gagal approve top-up. Pengajuan mungkin sudah diproses.");
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMsg", "ID pengajuan top-up tidak valid.");
+        }
+        showDashboard(request, response);
+    }
+
+    private void doRejectTopUp(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        try {
+            int requestId = Integer.parseInt(request.getParameter("requestId"));
+            Member admin = SessionUtil.getMember(request);
+            boolean ok = topUpDAO.rejectRequest(requestId, admin.getId());
+            if (ok) {
+                request.setAttribute("successMsg", "Pengajuan top-up berhasil ditolak.");
+            } else {
+                request.setAttribute("errorMsg", "Gagal menolak top-up. Pengajuan mungkin sudah diproses.");
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMsg", "ID pengajuan top-up tidak valid.");
+        }
+        showDashboard(request, response);
     }
 }

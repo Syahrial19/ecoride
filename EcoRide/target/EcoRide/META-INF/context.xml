@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context>
-
-    <!--
+<Context path="/ecoride">
+  <!--
         context.xml
         Lokasi file: Web Pages/META-INF/context.xml
 
@@ -11,20 +10,8 @@
         PENTING: sesuaikan username dan password MySQL kalian
         di bawah sebelum menjalankan aplikasi.
     -->
-    <Resource
-        name="jdbc/ecoride"
-        auth="Container"
-        type="javax.sql.DataSource"
-        maxActive="10"
-        maxIdle="5"
-        maxWait="10000"
-        driverClassName="com.mysql.cj.jdbc.Driver"
-        url="jdbc:mysql://localhost:3306/ecoride_db?useSSL=false&amp;serverTimezone=Asia/Jakarta&amp;allowPublicKeyRetrieval=true"
-        username="root"
-        password=""
-    />
-
-    <!--
+  <Resource auth="Container" driverClassName="com.mysql.cj.jdbc.Driver" maxActive="10" maxIdle="5" maxWait="10000" name="jdbc/ecoride" password="" type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/ecoride_db?useSSL=false&amp;serverTimezone=Asia/Jakarta&amp;allowPublicKeyRetrieval=true" username="root"/>
+  <!--
         Penjelasan atribut:
         - name        : nama referensi, dipanggil di DBConnection.java
         - maxActive   : maksimal 10 koneksi sekaligus

@@ -15,6 +15,7 @@ com\ecoride\ecoride\servlet\LoginServlet.class
 com\ecoride\ecoride\servlet\RentServlet.class
 com\ecoride\ecoride\dao\MemberDAO.class
 com\ecoride\ecoride\model\RentalTransaction.class
+com\ecoride\ecoride\dao\TopUpDAO.class
 com\ecoride\ecoride\dao\VehicleDAO.class
 com\ecoride\ecoride\servlet\AdminServlet.class
 com\ecoride\ecoride\model\Account.class

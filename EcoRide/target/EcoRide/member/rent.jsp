@@ -16,9 +16,14 @@
         <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/vehicles">
             <i class="bi bi-ev-station"></i> EcoRide
         </a>
-        <span class="text-white small">
-            Saldo: <strong>Rp <fmt:formatNumber value="${member.balance}" type="number" maxFractionDigits="0"/></strong>
-        </span>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-white small">
+                Saldo: <strong>Rp <fmt:formatNumber value="${member.balance}" type="number" maxFractionDigits="0"/></strong>
+            </span>
+            <a href="${pageContext.request.contextPath}/vehicles" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
     </div>
 </nav>
 
@@ -109,7 +114,7 @@
                         <i class="bi bi-check-circle"></i> Konfirmasi Sewa
                     </button>
                     <a href="${pageContext.request.contextPath}/vehicles" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Batal
+                        <i class="bi bi-arrow-left"></i> Kembali ke Kendaraan
                     </a>
                 </div>
             </form>

@@ -292,16 +292,22 @@ public class MemberDAO {
     // =========================================================
     public boolean delete(int memberId) {
         // Hapus transaksi member dulu (hindari FK constraint error)
+        String sqlTopUp = "DELETE FROM topup_requests WHERE member_id = ?";
         String sqlTx  = "DELETE FROM rental_transactions WHERE member_id = ?";
         String sqlMem = "DELETE FROM members WHERE id = ? AND role_id != 1";
         // role_id != 1 → tidak bisa hapus Admin
 
         Connection conn = null;
+        PreparedStatement ps0 = null;
         PreparedStatement ps1 = null;
         PreparedStatement ps2 = null;
         try {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false);
+
+            ps0 = conn.prepareStatement(sqlTopUp);
+            ps0.setInt(1, memberId);
+            ps0.executeUpdate();
 
             // Hapus transaksi dulu
             ps1 = conn.prepareStatement(sqlTx);
@@ -331,7 +337,8 @@ public class MemberDAO {
             }
         } finally {
             tutup(null, ps2, null);
-            tutup(null, ps1, conn);
+            tutup(null, ps1, null);
+            tutup(null, ps0, conn);
         }
         return false;
     }
